@@ -97,13 +97,12 @@ class CGDETRPredictor:
         return predictions
 
 def run_example():
-
     '''
     1) If you want to use the custom data, leave the url empty
     '''
-    youtube_url = ''
-    vid_st_sec, vid_ed_sec = 0.0, 0.0
-    desired_query = ''
+    youtube_url = ''#'https://www.youtube.com/watch?v=v7uV1I1HWqk'
+    vid_st_sec, vid_ed_sec = 0.0, 0.0 #127.0
+    desired_query = ''#'One or more lions'
 
     '''
     2) If you want to run with a video from youtube, please enter the youtube_url, [st, ed] in seconds, and custom query
@@ -120,40 +119,43 @@ def run_example():
     # load example data
     from utils.basic_utils import load_jsonl
 
-    if youtube_url != '':
-        # vid = info['vid'] # "vid": "NUsG9BgSes0_210.0_360.0"
-        queries = []
-        queries.append({})
-        file_name = youtube_url.split('/')[-1][8:] + '_' + str(vid_st_sec) + '_' + str(vid_ed_sec) + '.mp4'
-        if os.path.exists(os.path.join('run_on_video/example', file_name)):
-            video_path = os.path.join('run_on_video/example', file_name)
-            queries[0]['query'] = desired_query
-        else:
-            try:
-                yt = YouTube(youtube_url)
-                stream = yt.streams.get_highest_resolution()
-                video_path = os.path.join('./run_on_video/example', file_name)
-                stream.download(output_path='./run_on_video/example', filename=file_name)
-            except:
-                print('Error downloading video')
-                exit(1)
+    # if youtube_url != '':
+    #     # vid = info['vid'] # "vid": "NUsG9BgSes0_210.0_360.0"
+    #     queries = []
+    #     queries.append({})
+    #     file_name = youtube_url.split('/')[-1][8:] + '_' + str(vid_st_sec) + '_' + str(vid_ed_sec) + '.mp4'
+    #     if os.path.exists(os.path.join('run_on_video/example', file_name)):
+    #         video_path = os.path.join('run_on_video/example', file_name)
+    #         queries[0]['query'] = desired_query
+    #     else:
+    #         try:
+    #             yt = YouTube(youtube_url)
+    #             stream = yt.streams.get_highest_resolution()
+    #             video_path = os.path.join('./run_on_video/example', file_name)
+    #             stream.download(output_path='./run_on_video/example', filename=file_name)
+    #         except:
+    #             print('Error downloading video')
+    #             exit(1)
 
 
 
-        with VideoFileClip(video_path) as video:
-            new = video.subclip(vid_st_sec, vid_ed_sec)
-            new.write_videofile(video_path, audio_codec='aac')
+    #     with VideoFileClip(video_path) as video:
+    #         new = video.subclip(vid_st_sec, vid_ed_sec)
+    #         new.write_videofile(video_path, audio_codec='aac')
 
 
-        queries[0]['query'] = 'A woman is talking to a camera.'
-    else:
-        video_path = "run_on_video/example/RoripwjYFp8_60.0_210.0.mp4"
-        query_path = "run_on_video/example/queries.jsonl"
-        queries = load_jsonl(query_path)
+    #     #queries[0]['query'] = 'A woman is talking to a camera.'
+    # else:
+    #     video_path = "/scratch2/kat049/Git/Ask-Anything/video_chat2/example/output_2.avi"
+    #     query_path = "run_on_video/example/queries.jsonl"
+    #     queries = load_jsonl(query_path)
+    # query_text_list = [e["query"] for e in queries]
+    # ckpt_path = "run_on_video/CLIP_ckpt/qvhighlights_onlyCLIP/model_best.ckpt"
+            # run predictions
+    query_path = "run_on_video/example/queries.jsonl"
+    queries = load_jsonl(query_path)
     query_text_list = [e["query"] for e in queries]
     ckpt_path = "run_on_video/CLIP_ckpt/qvhighlights_onlyCLIP/model_best.ckpt"
-
-    # run predictions
     print("Build models...")
     clip_model_name_or_path = "ViT-B/32"
     # clip_model_name_or_path = "tmp/ViT-B-32.pt"
@@ -162,27 +164,36 @@ def run_example():
         clip_model_name_or_path=clip_model_name_or_path,
         device="cuda"
     )
-    print("Run prediction...")
-    predictions = cg_detr_predictor.localize_moment(
-        video_path=video_path, query_list=query_text_list)
+    for vid in range(2, 8):
+        video_path = f"/scratch2/kat049/Git/Ask-Anything/video_chat2/example/output_{vid}.avi"
+        print("Run prediction...")
+        predictions = cg_detr_predictor.localize_moment(
+            video_path=video_path, query_list=query_text_list)
 
-    # print data
-    for idx, query_data in enumerate(queries):
-        print("-"*30 + f"idx{idx}")
-        print(f">> query: {query_data['query']}")
-        print(f">> video_path: {video_path}")
-        print(f">> Predicted moments ([start_in_seconds, end_in_seconds, score]): "
-              f"{predictions[idx]['pred_relevant_windows']}")
-        pred_saliency_scores = torch.Tensor(predictions[idx]['pred_saliency_scores'])
-        bias = 0 - pred_saliency_scores.min()
-        pred_saliency_scores += bias
-        print(f">> Most saliency clip is (for all 2-sec clip): "
-              f"{pred_saliency_scores.argmax()}")
-        print(f">> Predicted saliency scores (for all 2-sec clip): "
-              f"{pred_saliency_scores.tolist()}")
-        if youtube_url == '':
-            print(f">> GT moments: {query_data['relevant_windows']}")
-            print(f">> GT saliency scores (only localized 2-sec clips): {query_data['saliency_scores']}")
+        # print data
+        for idx, query_data in enumerate(queries):
+            print("-"*30 + f"idx{idx}")
+            print(f">> query: {query_data['query']}")
+            print(f">> video_path: {video_path}")
+            print(f">> Predicted moments ([start_in_seconds, end_in_seconds, score]): "
+                f"{predictions[idx]['pred_relevant_windows']}")
+            pred_saliency_scores = torch.Tensor(predictions[idx]['pred_saliency_scores'])
+            bias = 0 - pred_saliency_scores.min()
+            pred_saliency_scores += bias
+            print(f">> Most saliency clip is (for all 2-sec clip): "
+                f"{pred_saliency_scores.argmax()}")
+            print(f">> Predicted saliency scores (for all 2-sec clip): "
+                f"{pred_saliency_scores.tolist()}")
+            with open('/scratch2/kat049/Git/CGDETR/run_on_video/example/saliency_message.txt', 'a') as file:
+                    file.write(
+                            f"query: {query_data['query']}" + '\n'
+                            f"Predicted moments ([start_in_seconds, end_in_seconds, score]: {predictions[idx]['pred_relevant_windows']}" + '\n'
+                            f"Most saliency clip is (for all 2-sec clip): {pred_saliency_scores.argmax()}" +
+                            '\n')
+
+        # if youtube_url == '':
+        #     print(f">> GT moments: {query_data['relevant_windows']}")
+        #     print(f">> GT saliency scores (only localized 2-sec clips): {query_data['saliency_scores']}")
 
 
 

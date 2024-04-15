@@ -1,1 +1,9 @@
-{"qid": 8056, "query": "Chef makes pizza and cuts it up.", "duration": 150, "vid": "RoripwjYFp8_60.0_210.0", "relevant_clip_ids": [53, 54, 55, 56, 57, 58, 59, 60], "saliency_scores": [[2, 3, 3], [2, 3, 3], [4, 3, 3], [3, 4, 3], [3, 4, 0], [3, 4, 0], [2, 4, 0], [2, 4, 0]], "relevant_windows": [[106, 122]]}
+{"qid": 6, "query": "Summarize any instances of human figures, silhouettes, or movement that could indicate the presence of survivors.", "vid": "camera0-1024x768-006"}
+{"qid": 6, "query": "Summarize any personal belongings or items that could indicate the presence or location of survivors.", "vid": "camera0-1024x768-006"}
+{"qid": 6, "query": "Provide a summary of the condition of buildings, structures, and infrastructure in the area, highlighting any significant damage or potential safety concerns.", "vid": "camera0-1024x768-006"}
+{"qid": 6, "query": "Summarize any potential hazards or obstacles, such as unstable debris, fires, or environmental hazards, that could impact rescue operations.", "vid": "camera0-1024x768-006"}
+{"qid": 6, "query": "Summarize any visible entry points, openings, or accessible routes that could be used by rescue teams to reach potential survivors.", "vid": "camera0-1024x768-006"}
+{"qid": 6, "query": "Summarize any distinct features, landmarks, or notable structures present in the environment that could be used for mapping and navigation.", "vid": "camera0-1024x768-006"}
+{"qid": 6, "query": "Provide a summary of any potential hazards or obstacles, such as unstable terrain, crevices, or environmental hazards, that could pose risks or impede the exploration process.", "vid": "camera0-1024x768-006"}
+{"qid": 6, "query": "Summarize any points of interest, unusual phenomena, or features that stand out and should be further investigated or mapped in detail.", "vid": "camera0-1024x768-006"}
+{"qid": 6, "query": "Summarize any visible clues or indicators of the nature or composition of the environment, such as geological formations, vegetation types, or water sources.", "vid": "camera0-1024x768-006"}
